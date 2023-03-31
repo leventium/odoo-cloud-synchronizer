@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "odoo-cloud-synchronizer"
+version = "0.1.0"
+description = "Sync your odoo backups with yandex disk"
+authors = ["Leon <limiroshnichenko@miem.hse.ru>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "odoo_cloud_synchronizer"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+asyncpg = "^0.27.0"
+httpx = "^0.23.3"
+python-dotenv = "^1.0.0"
+
+
+[tool.poetry.group.server.dependencies]
+fastapi = "^0.93.0"
+uvicorn = "^0.20.0"
+redis = "^4.5.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
