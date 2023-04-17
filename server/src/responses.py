@@ -22,7 +22,7 @@ def redirect_to_yandex_oauth(state: str = ""):
     return RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
 
 
-def serialize_instances(instances: dict):
+def serialize_instances(instances: list[dict]):
     if len(instances) == 0:
         result = "Empty."
     else:

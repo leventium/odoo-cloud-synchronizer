@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends
 from cache import Cache
 from database import Database
@@ -15,7 +15,7 @@ async def auth_post_instance(
         cache: Cache = Depends(get_cache),
         db: Database = Depends(get_database)):
     request_data = await cache.get_record(uuid)
-    if not await db.check_user(request_data["access_token"]):
+    if not await db.user_exists(request_data["access_token"]):
         due_time = timedelta(seconds=int(request_data["expires_in"]))
         due_date = datetime.now() + due_time
         await db.insert_user(
@@ -23,7 +23,7 @@ async def auth_post_instance(
             request_data["refresh_token"],
             due_date.date()
         )
-    if db.check_odoo_instance(
+    if db.odoo_instance_exists(
             request_data["access_token"],
             request_data["url"],
             request_data["db_name"]):

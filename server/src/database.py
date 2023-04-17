@@ -68,7 +68,7 @@ class Database:
                 VALUES ($1, $2, $3) ON CONFLICT DO NOTHING;
         """, token, refresh_token, token_due_date)
 
-    async def check_user(self, token: str) -> bool:
+    async def user_exists(self, token: str) -> bool:
         return bool(await self.conn.fetchval("""
             SELECT count(*)
                 FROM users
@@ -87,7 +87,7 @@ class Database:
                 VALUES($1, $2, $3, $4, current_date, $5) ON CONFLICT DO NOTHING;
         """, user_token, instance_url, db_name, db_password, cooldown)
 
-    async def check_odoo_instance(self, owner: str, url: str, db_name: str):
+    async def odoo_instance_exists(self, owner: str, url: str, db_name: str):
         return bool(await self.conn.fetchval("""
             SELECT count(*)
                 FROM odoo_instances
