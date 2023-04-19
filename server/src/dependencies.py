@@ -1,4 +1,5 @@
 import os
+from fastapi import HTTPException, status
 from database import Database
 from cache import Cache
 
@@ -22,4 +23,19 @@ async def get_cache():
     try:
         yield cache
     finally:
+        await cache.close()
+
+
+async def get_request_data_from_cache(uuid: str):
+    cache = Cache(os.environ["REDIS_CONNSTRING"])
+    try:
+        if await cache.record_exists(uuid):
+            yield cache.get_record(uuid)
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Данные запроса не найдены."
+            )
+    finally:
+        await cache.delete_record(uuid)
         await cache.close()

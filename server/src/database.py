@@ -29,7 +29,7 @@ class Database:
             
             CREATE TABLE IF NOT EXISTS odoo_instances (
                 owner           varchar(80) REFERENCES users(token)
-                    ON UPDATE CASCADE,
+                    ON UPDATE CASCADE ON DELETE CASCADE,
                 url             varchar(140),
                 db_name         varchar(80),
                 db_password     varchar(80),

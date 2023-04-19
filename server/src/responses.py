@@ -53,3 +53,9 @@ SUCCESS_DELETION = Response(
     media_type="text/plain",
     content="Odoo instance deleted successfully."
 )
+
+ODOO_INSTANCE_NOT_EXIST = Response(
+    status_code=status.HTTP_400_BAD_REQUEST,
+    media_type="text/plain",
+    content="Odoo instance with this URL and Database name doesn't exist."
+)
