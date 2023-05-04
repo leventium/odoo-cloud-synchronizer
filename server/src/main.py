@@ -1,6 +1,11 @@
 import os
-from fastapi import FastAPI
 from dotenv import load_dotenv
+load_dotenv()
+from loguru import logger
+logger.add("logs.log", rotation="100 MB", level="INFO")
+logger.add("errors.log", rotation="100 MB", level="ERROR")
+
+from fastapi import FastAPI
 import uvicorn
 import auth
 import authorized_routers
@@ -8,7 +13,6 @@ import unauthorized_routers
 from database import Database
 
 
-load_dotenv()
 app = FastAPI()
 
 

@@ -15,7 +15,7 @@ def redirect_to_yandex_oauth(state: str = ""):
     redirect_url = list(urlparse(YANDEX_OAUTH))
     redirect_url[4] = urlencode({
         "response_type": "code",
-        "client_id": os.environ["YANDEX_CLIENT_TOKEN"],
+        "client_id": os.environ["YANDEX_APP_ID"],
         "state": state
     })
     redirect_url = urlunparse(redirect_url)
@@ -33,6 +33,30 @@ def serialize_instances(instances: list[dict]):
         status_code=status.HTTP_200_OK,
         media_type="text/plain",
         content=result
+    )
+
+
+def get_gateway_timeout_error(text: str):
+    return Response(
+        status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+        media_type="text/plain",
+        content=text
+    )
+
+
+def get_bad_gateway_error(text: str):
+    return Response(
+        status_code=status.HTTP_502_BAD_GATEWAY,
+        media_type="text/plain",
+        content=text
+    )
+
+
+def get_bad_request_error(text: str):
+    return Response(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        media_type="text/plain",
+        content=text
     )
 
 
@@ -58,4 +82,11 @@ ODOO_INSTANCE_NOT_EXIST = Response(
     status_code=status.HTTP_400_BAD_REQUEST,
     media_type="text/plain",
     content="Odoo instance with this URL and Database name doesn't exist."
+)
+
+STRING_TOO_LONG = Response(
+    status_code=status.HTTP_400_BAD_REQUEST,
+    media_type="text/plain",
+    content="String is too long. URL max length is 140, "
+            "DB_NAME - 80, DB_PASSWORD - 80."
 )
