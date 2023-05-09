@@ -3,8 +3,8 @@ from multiprocessing import Process
 from dotenv import load_dotenv
 load_dotenv()
 from loguru import logger
-logger.add("logs.log", rotation="100 MB", level="INFO")
-logger.add("errors.log", rotation="100 MB", level="ERROR")
+logger.add("logs/logs.log", rotation="100 MB", level="INFO")
+logger.add("logs/errors.log", rotation="100 MB", level="ERROR")
 
 from fastapi import FastAPI
 import uvicorn

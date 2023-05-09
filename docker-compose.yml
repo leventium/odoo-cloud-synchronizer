@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  app:
+    build: .
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - YANDEX_APP_ID=
+      - YANDEX_APP_SECRET=
+      - PG_HOST=db
+      - PG_PORT=5432
+      - PG_USER=postgres
+      - PG_PASSWORD=password
+      - PG_DATABASE=postgres
+      - REDIS_CONNSTRING=redis://cache
+      - ROOT_PATH=
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      - db
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+  cache:
+    image: redis:7-alpine
+    restart: always
