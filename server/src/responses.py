@@ -90,3 +90,10 @@ STRING_TOO_LONG = Response(
     content="String is too long. URL max length is 140, "
             "DB_NAME - 80, DB_PASSWORD - 80."
 )
+
+WRONG_ODOO_URL_FORMAT = Response(
+    status_code=status.HTTP_400_BAD_REQUEST,
+    media_type="text/plain",
+    content="Wrong odoo url format. It must be link to odoo "
+            "database manager, like 'BASE_URL/web/database/manager'"
+)

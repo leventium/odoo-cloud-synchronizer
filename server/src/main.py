@@ -1,4 +1,5 @@
 import os
+from multiprocessing import Process
 from dotenv import load_dotenv
 load_dotenv()
 from loguru import logger
@@ -8,6 +9,7 @@ logger.add("errors.log", rotation="100 MB", level="ERROR")
 from fastapi import FastAPI
 import uvicorn
 import auth
+import syncer
 import authorized_routers
 import unauthorized_routers
 from database import Database
@@ -33,4 +35,5 @@ app.include_router(unauthorized_routers.router)
 
 
 if __name__ == "__main__":
+    Process(target=syncer.main).start()
     uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", "8000")))

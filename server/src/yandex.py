@@ -16,16 +16,26 @@ class YandexDisk:
         )
 
     async def close(self):
-        await self.close()
+        await self.client.aclose()
 
-    async def check_token(self) -> bool:
-        res = await self.client.get("/resources", params={"path": "app:/"})
-        if 299 >= res.status_code >= 200:
-            return True
-        return False
-
-    async def put_file(self) -> None:
-        pass
+    async def put_file(self, filename: str, file: bytes) -> None:
+        try:
+            upload_request = await self.client.get(
+                "https://cloud-api.yandex.net/v1/disk/resources/upload",
+                params={"path": f"app:/{filename}"}
+            )
+            upload_request.raise_for_status()
+        except httpx.HTTPError as err:
+            logger.error("Error occurred while "
+                         f"requesting upload url - {str(err)}")
+            raise YandexResponseError("Error while requesting upload url.")
+        upload_url = upload_request.json()["href"]
+        try:
+            res = await self.client.put(upload_url, content=file, timeout=None)
+            res.raise_for_status()
+        except httpx.HTTPError as err:
+            logger.error(f"Error occurred while uploading file - {str(err)}")
+            raise YandexResponseError("Error while uploading file.")
 
 
 class YandexID:
@@ -101,6 +111,33 @@ class YandexID:
         raise YandexResponseError(
             "Something went wrong, yandex responded not with HTTP 200."
         )
+
+    @staticmethod
+    async def get_new_token(refresh_token: str) -> tuple[str, str, str]:
+        async with httpx.AsyncClient() as cl:
+            try:
+                res = await cl.post(
+                    "https://oauth.yandex.ru/token",
+                    data={
+                        "grant_type": "refresh_token",
+                        "refresh_token": refresh_token
+                    },
+                    auth=(
+                        os.environ["YANDEX_APP_ID"],
+                        os.environ["YANDEX_APP_SECRET"]
+                    )
+                )
+                res.raise_for_status()
+            except httpx.HTTPError as err:
+                logger.error("Error occurred while requesting "
+                             f"refresh token - {str(err)}")
+                raise YandexResponseError("Error while getting refresh token.")
+            response_data = res.json()
+            return (
+                response_data["access_token"],
+                response_data["refresh_token"],
+                response_data["expires_in"]
+            )
 
 
 class YandexResponseError(Exception):

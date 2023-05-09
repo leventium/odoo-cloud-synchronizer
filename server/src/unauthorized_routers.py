@@ -2,7 +2,7 @@ import os
 from uuid import uuid4
 from fastapi import APIRouter, Depends
 from dependencies import get_cache
-from responses import redirect_to_yandex_oauth
+from responses import redirect_to_yandex_oauth, WRONG_ODOO_URL_FORMAT
 from cache import Cache
 
 
@@ -16,6 +16,8 @@ async def post_instance(
         db_password: str,
         cooldown: int,
         cache: Cache = Depends(get_cache)):
+    if not url.endswith("manager"):
+        return WRONG_ODOO_URL_FORMAT
     request_id = str(uuid4())
     await cache.put_record(
         request_id,

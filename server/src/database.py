@@ -48,15 +48,17 @@ class Database:
             username: str,
             password: str,
             database: str):
-        instance = cls()
-        instance.conn = await asyncpg.connect(
+        conn = await asyncpg.connect(
             host=host,
             port=port,
             user=username,
             password=password,
             database=database
         )
-        return instance
+        return cls(conn)
+
+    def __init__(self, conn: asyncpg.Connection):
+        self.conn = conn
 
     async def close(self):
         await self.conn.close()
@@ -158,12 +160,12 @@ class Database:
 
     async def get_tokens_to_refresh(self) -> list[dict[str, str]]:
         res = await self.conn.fetch("""
-            SELECT token, refresh_token
+            SELECT id, refresh_token
             FROM users
             WHERE current_date > users.token_due_date - 30;
         """)
         return [{
-            "token": record["token"],
+            "id": record["id"],
             "refresh_token": record["refresh_token"]
         } for record in res]
 
